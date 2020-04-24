@@ -1,16 +1,16 @@
 var express = require('express');
 var router = express.Router();
 var mongoose = require('mongoose');
-var Student = mongoose.model('Student');
+var Mentor = mongoose.model('Mentor');
 var auth = require('../../modules/auth');
 
 
 // register
 router.post('/', async (req, res) => {
   try {
-    var student = await Student.create(req.body);
-    console.log(student);
-    res.json(student);
+    var mentor = await Mentor.create(req.body);
+    console.log(mentor);
+    res.json(mentor);
   } catch (error) {
     res.json(error);
   }
@@ -21,12 +21,12 @@ router.post('/', async (req, res) => {
 router.post('/login', async (req, res) => {
   var { email, password } = req.body;
   try {
-    var student = await Student.findOne({ email });
-    if (!student) return res.status(400).json({ error: "this email is not registered" });
-    var result = await student.verifyPassword(password);
+    var mentor = await Mentor.findOne({ email });
+    if (!mentor) return res.status(400).json({ error: "this email is not registered" });
+    var result = await mentor.verifyPassword(password);
     if (!result) return res.status(400).json({ error: "password" });
-    var token = await auth.generateJWT(student);
-    res.json({ Profile: { username: student.name, email: student.email, batchno: student.batchno, token: token } })
+    var token = await auth.generateJWT(mentor);
+    res.json({ Profile: { username: mentor.name, email: mentor.email, token: token } })
   } catch (error) {
     res.status(400).json(error);
   }
