@@ -1,35 +1,12 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
-var mongoose = require('mongoose');
-var Student = mongoose.model('Student');
-var auth = require('../../modules/auth');
-
+var mongoose = require("mongoose");
+var student = require("../../controllers/students")
 
 // register
-router.post('/', async (req, res) => {
-  try {
-    var student = await Student.create(req.body);
-    console.log(student);
-    res.json(student);
-  } catch (error) {
-    res.json(error);
-  }
-})
-
+router.post("/", student.signUp);
 
 // login
-router.post('/login', async (req, res) => {
-  var { email, password } = req.body;
-  try {
-    var student = await Student.findOne({ email });
-    if (!student) return res.status(400).json({ error: "this email is not registered" });
-    var result = await student.verifyPassword(password);
-    if (!result) return res.status(400).json({ error: "password" });
-    var token = await auth.generateJWT(student);
-    res.json({ Profile: { username: student.name, email: student.email, batchno: student.batchno, token: token } })
-  } catch (error) {
-    res.status(400).json(error);
-  }
-})
+router.post("/login", student.login);
 
 module.exports = router;

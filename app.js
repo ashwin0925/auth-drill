@@ -25,7 +25,8 @@ var mongoose = require('mongoose')
 // Configure dotenv
 require('dotenv').config();
 require('./models/student');
-require('./models/mentor')
+require('./models/mentor');
+require('./models/todo');
 
 // connect to db
 mongoose.connect('mongodb://localhost/auth', {

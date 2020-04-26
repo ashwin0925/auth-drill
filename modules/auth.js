@@ -1,4 +1,4 @@
-const jwt = require('jsonwebtoken');
+const jwt = require("jsonwebtoken");
 
 module.exports = {
   generateJWT: async (user) => {
@@ -6,8 +6,8 @@ module.exports = {
     var token = await jwt.sign(payload, process.env.SECRET);
     return token;
   },
-  verifyToken: (async (req, res, next) => {
-    var token = req.headers['authorization'] || "";
+  verifyToken: async (req, res, next) => {
+    var token = req.headers["authorization"] || "";
     if (token) {
       try {
         var payload = await jwt.verify(token, process.env.SECRET);
@@ -17,9 +17,8 @@ module.exports = {
       } catch (error) {
         res.json({ message: "invalid token", error });
       }
-
     } else {
-      res.json({ msg: 'Token required' });
+      res.json({ msg: "Token required" });
     }
-  })
-}
+  },
+};

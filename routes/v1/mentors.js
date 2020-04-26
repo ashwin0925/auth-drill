@@ -1,34 +1,37 @@
-var express = require('express');
+var express = require("express");
 var router = express.Router();
-var mongoose = require('mongoose');
-var Mentor = mongoose.model('Mentor');
-var auth = require('../../modules/auth');
-
+var mongoose = require("mongoose");
+var auth = require("../../modules/auth");
+var Todo = mongoose.model("Todo")
+var mentors = require("../../controllers/mentors")
 
 // register
-router.post('/', async (req, res) => {
+router.post("/", mentors.signUp);
+
+// login
+router.post("/login", mentors.login);
+
+// todos
+router.post('/createtodo', auth.verifyToken, async (req, res) => {
   try {
-    var mentor = await Mentor.create(req.body);
-    console.log(mentor);
-    res.json(mentor);
-  } catch (error) {
-    res.json(error);
+    console.log("todo")
+    var todos = await Todo.create(req.body);
+    res.json({ success: true, todos });
+
+  } catch (err) {
+    console.log(err);
+    res.json({ success: false, err })
   }
 })
 
-
-// login
-router.post('/login', async (req, res) => {
-  var { email, password } = req.body;
+//list todos
+router.get("/todos", auth.verifyToken, async (req, res) => {
   try {
-    var mentor = await Mentor.findOne({ email });
-    if (!mentor) return res.status(400).json({ error: "this email is not registered" });
-    var result = await mentor.verifyPassword(password);
-    if (!result) return res.status(400).json({ error: "password" });
-    var token = await auth.generateJWT(mentor);
-    res.json({ Profile: { username: mentor.name, email: mentor.email, token: token } })
-  } catch (error) {
-    res.status(400).json(error);
+    var todos = await Todo.find();
+    res.json({ success: true, todos });
+  } catch (err) {
+    console.log(err);
+    res.json({ success: false, err });
   }
 })
 
