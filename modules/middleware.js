@@ -5,7 +5,7 @@ exports.isLogged = (req, res, next) => {
   if (req.session && req.session.userId) {
     next();
   } else {
-    res.json({ success: false, msg: "You need to login first" });
+    res.json({ success: false, msg: "need to login" });
   }
 };
 
