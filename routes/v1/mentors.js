@@ -1,9 +1,10 @@
 var express = require("express");
 var router = express.Router();
 var mongoose = require("mongoose");
-var auth = require("../../modules/auth");
+var auth = require("../../modules/middleware");
 var Todo = mongoose.model("Todo")
 var mentors = require("../../controllers/mentors")
+var middleware = require("../../modules/middleware")
 
 // register
 router.post("/", mentors.signUp);
@@ -12,7 +13,7 @@ router.post("/", mentors.signUp);
 router.post("/login", mentors.login);
 
 // todos
-router.post('/createtodo', auth.verifyToken, async (req, res) => {
+router.post('/createtodo', middleware.isLogged, middleware.isMentor, async (req, res) => {
   try {
     console.log("todo")
     var todos = await Todo.create(req.body);
@@ -25,7 +26,7 @@ router.post('/createtodo', auth.verifyToken, async (req, res) => {
 })
 
 //list todos
-router.get("/todos", auth.verifyToken, async (req, res) => {
+router.get("/todos", middleware.isLogged, async (req, res) => {
   try {
     var todos = await Todo.find();
     res.json({ success: true, todos });

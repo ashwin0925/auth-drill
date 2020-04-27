@@ -1,9 +1,12 @@
 var express = require('express');
 var path = require('path');
 var logger = require('morgan');
+var cookieParser = require("cookie-parser")
+var session = require("express-session")
+var mongoose = require("mongoose");
 
-// var indexRouter = require('./routes/index');
-// var usersRouter = require('./routes/users');
+var indexRouter = require('./routes/api');
+var middleware = require('./modules/middleware');
 
 var app = express();
 
@@ -11,25 +14,22 @@ app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(cookieParser());
 
 // app.use('/', indexRouter);
 // app.use('/users', usersRouter);
 
-module.exports = app;
-var express = require('express');
-var path = require('path');
-var logger = require('morgan')
-var mongoose = require('mongoose')
-
-
-// Configure dotenv
-require('dotenv').config();
-require('./models/student');
-require('./models/mentor');
-require('./models/todo');
+app.use(
+  session({
+    secret: process.env.SECRET,
+    resave: true,
+    saveUninitialized: false,
+    store: new MongoStore({ mongooseConnection: mongoose.connection })
+  })
+)
 
 // connect to db
-mongoose.connect('mongodb://localhost/auth', {
+mongoose.connect('mongodb://localhost/authcookie', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 },
@@ -37,16 +37,8 @@ mongoose.connect('mongodb://localhost/auth', {
     console.log('connected', err ? false : true);
   });
 
-var v1Router = require('./routes/v1');
+app.use(middleware.loggedUser);
+app.use("api/v1", indexRouter)
 
-var app = express();
-
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-// app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-
-app.use('/api/v1', v1Router);
 
 module.exports = app;

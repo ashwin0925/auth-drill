@@ -1,5 +1,5 @@
 var Student = require("../models/mentor")
-var auth = require("../modules/auth")
+var auth = require("../modules/middleware")
 
 module.exports = {
   signUp: async (req, res) => {
